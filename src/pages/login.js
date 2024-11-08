@@ -18,7 +18,21 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     const result = await signInWithPopup(auth, googleAuthProvider);
     const token = await result.user?.getIdToken();
-    console.log(token);
+    const body = {
+      firebaseUID: result.user?.uid,
+      email: result.user?.email,
+      token,
+      name: result.user?.displayName,
+    };
+    const response = await fetch("/api/auth", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    console.log(response);
   };
 
   const handleEmailLogin = async (e) => {
