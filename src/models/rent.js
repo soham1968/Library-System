@@ -7,7 +7,7 @@ const RentalSchema = new mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: "Book", required: true },
     ],
     rentedAt: { type: Date, default: Date.now },
-    returnDate: { type: Date },
+    returnDate: { type: "string" },
     status: { type: String, enum: ["ongoing", "returned"], default: "ongoing" },
   },
   {

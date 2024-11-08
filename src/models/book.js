@@ -22,12 +22,12 @@ BookSchema.pre("save", function (next) {
   next();
 });
 
-BookSchema.post("save", async function (doc) {
-  await syncToAlgolia(doc);
-});
+// BookSchema.post("save", async function (doc) {
+//   await syncToAlgolia(doc);
+// });
 
-BookSchema.post("remove", async function (doc) {
-  await removeFromAlgolia(doc._id);
-});
+// BookSchema.post("remove", async function (doc) {
+//   await removeFromAlgolia(doc._id);
+// });
 
 export default mongoose.models.Book || mongoose.model("Book", BookSchema);

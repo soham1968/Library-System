@@ -1,7 +1,8 @@
 import book from "@/models/book";
-import rent from "@/models/rent";
-import user from "@/models/user";
+import Rent from "@/models/rent";
+import User from "@/models/user";
 import connectToDatabase from "@/utils/dbConnect";
+import validateToken from "@/utils/validateToken";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -9,14 +10,20 @@ export default async function handler(req, res) {
   const { userId } = req.query;
 
   if (req.method === "POST") {
-    const { bookIds, rentalDuration } = req.body;
-
+    const { bookIds, rentalDuration, token } = req.body;
+    const decodedToken = await validateToken(token);
+    if (!decodedToken.uid) {
+      return res.status(401).json({ message: "Authorization Failed" });
+    }
     try {
-      const user = await user.findById(userId);
+      const user = await User.findById(userId);
       if (!user) return res.status(404).json({ error: "User not found" });
 
       // Verify books availability and update quantities
-      const books = await book.find({ _id: { $in: bookIds } });
+      const books = await book.find({
+        _id: { $in: bookIds },
+        isAvailable: true,
+      });
       const unavailableBooks = books.filter((book) => book.availableCopies < 1);
 
       if (unavailableBooks.length > 0) {
@@ -35,7 +42,7 @@ export default async function handler(req, res) {
       );
 
       // Create rental record
-      const rent = new rent({
+      const rent = new Rent({
         user: userId,
         books: rentedBooks,
         rentedAt: new Date(),
@@ -44,7 +51,12 @@ export default async function handler(req, res) {
       });
 
       await rent.save();
-      res.json({ message: "Rental successful", rent });
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { cart: [] },
+        { new: true }
+      );
+      res.json({ message: "Rental successful", rent, updatedUser });
     } catch (error) {
       res.status(500).json({ error: "Error processing rental", error });
     }
