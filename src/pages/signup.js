@@ -6,7 +6,7 @@ import {
   SignUpBox,
   StyledButton,
   Title,
-} from "../components/SignUpPage";
+} from "@/components/SignupPage";
 
 import { auth } from "@/utils/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";

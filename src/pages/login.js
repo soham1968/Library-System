@@ -10,7 +10,7 @@ import {
   PageContainer,
   StyledButton,
   Title,
-} from "../components/LoginPage";
+} from "@/components/LoginPage";
 import { useUser } from "@/reducers/UserContext";
 import { useRouter } from "next/router";
 
