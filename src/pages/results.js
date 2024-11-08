@@ -19,25 +19,37 @@ const LoadingContainer = styled("div")`
   margin-top: 20px;
 `;
 
+const EndMessage = styled("p")`
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+`;
+
 const Results = () => {
   const router = useRouter();
   const { query } = router.query;
   const [results, setResults] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
 
   // Function to fetch books with pagination
   const fetchBooks = async (query, page) => {
     setLoading(true);
     const newResults = await searchBooks(query, page);
-    setResults((prevResults) => [...prevResults, ...newResults]);
+
+    if (newResults.length === 0) {
+      setHasMore(false); // No more results to load
+    } else {
+      setResults((prevResults) => [...prevResults, ...newResults]);
+    }
     setLoading(false);
   };
 
   // Use Intersection Observer to detect when reaching the end of the list
   const lastBookElementRef = (node) => {
-    if (loading) return;
+    if (loading || !hasMore) return;
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
@@ -52,6 +64,7 @@ const Results = () => {
     if (query) {
       setResults([]);
       setPage(0);
+      setHasMore(true);
       fetchBooks(query, 0);
     }
   }, [query]);
@@ -76,6 +89,7 @@ const Results = () => {
           <CircularProgress />
         </LoadingContainer>
       )}
+      {!loading && !hasMore && <EndMessage>No more books found</EndMessage>}
     </ResultsContainer>
   );
 };

@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const RentalSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -13,3 +15,4 @@ const RentalSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+export default mongoose.models.Rent || mongoose.model("Rent", RentalSchema);
