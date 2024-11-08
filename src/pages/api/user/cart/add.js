@@ -1,3 +1,4 @@
+import book from "@/models/book";
 import user from "@/models/user";
 import connectToDatabase from "@/utils/dbConnect";
 import validateToken from "@/utils/validateToken";
@@ -11,7 +12,7 @@ export default async function handler(req, res) {
     if (!firebaseUID || !Array.isArray(cart) || !token) {
       return res
         .status(400)
-        .json({ message: "firebaseUID and cart and tojen are required" });
+        .json({ message: "firebaseUID, cart, and token are required" });
     }
     const decodedToken = await validateToken(token);
     if (!decodedToken.uid || decodedToken.uid !== firebaseUID) {
@@ -28,18 +29,30 @@ export default async function handler(req, res) {
           .json({ message: "One or more book IDs are invalid" });
       }
 
-      // Update user's cart
-      const updatedUser = await user.findOneAndUpdate(
-        { firebaseUID },
-        { cart },
-        { new: true }
-      );
-
-      if (!updatedUser) {
+      // Check if books are already in the user's cart
+      const existingUser = await user.findOne({ firebaseUID });
+      if (!existingUser) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      return res.status(200).json(updatedUser);
+      const alreadyInCart = cart.some((newCartItem) =>
+        existingUser.cart.some(
+          (existingCartItem) =>
+            existingCartItem.book.toString() === newCartItem.book
+        )
+      );
+
+      if (alreadyInCart) {
+        return res
+          .status(400)
+          .json({ message: "One or more books are already in the cart" });
+      }
+
+      // Update user's cart
+      existingUser.cart = [...existingUser.cart, ...cart];
+      await existingUser.save();
+
+      return res.status(200).json(existingUser);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Error updating cart", error });

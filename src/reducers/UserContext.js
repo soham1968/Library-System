@@ -23,6 +23,7 @@ export const UserProvider = ({ children }) => {
       if (firebaseUser && !state.user) {
         try {
           const token = await firebaseUser.getIdToken();
+          localStorage.setItem("token", token);
           const response = await fetch("/api/auth", {
             method: "POST",
             headers: {
@@ -35,7 +36,8 @@ export const UserProvider = ({ children }) => {
               firebaseUID: firebaseUser.uid,
             }),
           });
-          dispatch({ type: "SET_USER", payload: response.data });
+          const data = await response.json();
+          dispatch({ type: "SET_USER", payload: data });
           dispatch({ type: "SET_LOADING", payload: false });
         } catch (error) {
           console.error("Error validating token:", error);

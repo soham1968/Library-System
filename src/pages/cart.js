@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
@@ -7,9 +7,11 @@ import {
   List,
   ListItem,
   ListItemText,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
+import { useUser } from "@/reducers/UserContext";
 
 const CartContainer = styled(Container)({
   display: "flex",
@@ -32,8 +34,37 @@ const CartBox = styled(Box)({
   boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1)",
 });
 
-const Cart = ({ cartItems }) => {
-  if (cartItems.length === 0) {
+const Cart = () => {
+  const { state, dispatch } = useUser();
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = state;
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      if (user) {
+        const token = localStorage.getItem("token");
+        try {
+          const response = await fetch(
+            `/api/user/cart?firebaseUID=${user.firebaseUID}&token=${token}`
+          );
+          const data = await response.json();
+          if (response.status === 200) {
+            setCartItems(data);
+          } else {
+            console.error(data.message);
+          }
+        } catch (error) {
+          console.error("Error fetching cart items:", error);
+        }
+        setLoading(false);
+      }
+    };
+    if (user && loading) {
+      fetchCartItems();
+    }
+  }, [user, loading]);
+  if (!loading && user?.cart.length === 0) {
     return (
       <CartContainer>
         <Typography variant="h5">Your cart is empty.</Typography>
@@ -45,7 +76,14 @@ const Cart = ({ cartItems }) => {
       </CartContainer>
     );
   }
-
+  if (loading) {
+    return (
+      <CartContainer>
+        <CircularProgress />
+        <Typography variant="h5">Loading...</Typography>
+      </CartContainer>
+    );
+  }
   return (
     <CartContainer>
       <CartBox>
@@ -53,10 +91,11 @@ const Cart = ({ cartItems }) => {
           Your Cart
         </Typography>
         <List>
-          {cartItems.map((item) => (
-            <ListItem key={item.bookId} divider>
+          {cartItems?.map((item) => (
+            <ListItem sx={{ background: "#fff" }} key={item.bookId} divider>
               <ListItemText
                 primary={item.title}
+                sx={{ color: "#121212" }}
                 secondary={`Author: ${item.author} | Quantity: ${item.quantity}`}
               />
             </ListItem>
@@ -68,22 +107,6 @@ const Cart = ({ cartItems }) => {
       </Button>
     </CartContainer>
   );
-};
-
-Cart.getInitialProps = async (ctx) => {
-  const cartItems = [
-    {
-      bookId: "1",
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      quantity: 1,
-    },
-    // Add more sample items if needed
-  ];
-
-  return {
-    cartItems,
-  };
 };
 
 export default Cart;
