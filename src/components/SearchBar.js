@@ -85,7 +85,12 @@ const SearchBar = () => {
       ) : suggestions.length > 0 ? (
         <SuggestionList>
           {suggestions.map((suggestion) => (
-            <ListItem button key={suggestion.objectID}>
+            <ListItem
+              onClick={() => router.push(`/books/${suggestion._id}`)}
+              button
+              sx={{ ":hover": { cursor: "pointer", border: "1px solid #000" } }}
+              key={suggestion.objectID}
+            >
               <ListItemText sx={{ color: "#000" }} primary={suggestion.title} />
             </ListItem>
           ))}
