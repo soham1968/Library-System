@@ -1,16 +1,47 @@
 // components/SearchBar.js
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import { searchBooks } from "../utils/algolia";
 import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import CircularProgress from "@mui/material/CircularProgress";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import CircularProgress from "@mui/material/CircularProgress";
+import { styled } from "@mui/material";
+
+const SearchContainer = styled("div")({
+  width: "100%",
+  height: "100%",
+  margin: "0 auto",
+  position: "relative",
+});
+const SearchBox = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  border: "1px solid #ddd",
+  borderRadius: 4,
+  padding: 8,
+  backgroundColor: "#f9f9f9",
+});
+const SuggestionList = styled(List)({
+  border: "1px solid #ddd",
+  borderRadius: 4,
+  marginTop: 10,
+  maxHeight: 200,
+  overflowY: "auto",
+  backgroundColor: "white",
+  position: "absolute",
+  width: "100%",
+  zIndex: 1000,
+});
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   // Function to handle search input changes
   const handleSearch = async (event) => {
@@ -18,40 +49,49 @@ const SearchBar = () => {
     setQuery(searchQuery);
 
     if (searchQuery.trim() === "") {
-      setResults([]);
+      setSuggestions([]);
       return;
     }
 
     setLoading(true);
     const searchResults = await searchBooks(searchQuery);
-    setResults(searchResults);
+    setSuggestions(searchResults);
     setLoading(false);
   };
 
+  // Function to handle search icon click
+  const handleSearchIconClick = () => {
+    if (query.trim() === "") return;
+    router.push(`/results?query=${query}`);
+  };
+
   return (
-    <div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
-      <TextField
-        label="Search Books"
-        variant="outlined"
-        fullWidth
-        value={query}
-        onChange={handleSearch}
-      />
+    <SearchContainer>
+      <SearchBox>
+        <TextField
+          label="Search Books"
+          variant="outlined"
+          fullWidth
+          value={query}
+          onChange={handleSearch}
+        />
+        <IconButton onClick={handleSearchIconClick}>
+          <SearchIcon sx={{ color: "#000" }} />
+        </IconButton>
+      </SearchBox>
+
       {loading ? (
         <CircularProgress style={{ marginTop: "10px" }} />
-      ) : (
-        <List>
-          {results.map((result) => (
-            <ListItem button key={result.objectID}>
-              <ListItemText
-                primary={result.title}
-                secondary={`Author: ${result.author}, Genre: ${result.genre}, Published Year: ${result.publishedYear}`}
-              />
+      ) : suggestions.length > 0 ? (
+        <SuggestionList>
+          {suggestions.map((suggestion) => (
+            <ListItem button key={suggestion.objectID}>
+              <ListItemText sx={{ color: "#000" }} primary={suggestion.title} />
             </ListItem>
           ))}
-        </List>
-      )}
-    </div>
+        </SuggestionList>
+      ) : null}
+    </SearchContainer>
   );
 };
 

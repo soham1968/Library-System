@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Container, Typography, Button, Box } from "@mui/material";
-import BookCard from "../../components/BookCard";
+import BookCard from "../../components/BookCardAdmin";
 import BookModal from "../../components/BookModal";
 
 const BookPage = () => {

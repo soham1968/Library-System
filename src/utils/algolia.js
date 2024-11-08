@@ -48,11 +48,11 @@ export const removeFromAlgolia = async (bookId) => {
 };
 
 // 3. Function to search books in Algolia
-export const searchBooks = async (query) => {
+export const searchBooks = async (query, page) => {
   try {
     const result = await client.searchSingleIndex({
       indexName: ALGOLIA_INDEX_NAME,
-      searchParams: { query },
+      searchParams: { query, page: page || 0 },
     });
     return result.hits;
   } catch (error) {

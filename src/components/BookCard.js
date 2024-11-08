@@ -1,27 +1,39 @@
+// components/BookCard.js
 import React from "react";
-import styled from "@emotion/styled";
-import { Card, CardContent, Typography, Button } from "@mui/material";
+import { styled } from "@mui/material";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
 
 const StyledCard = styled(Card)`
-  margin: 1rem 0;
+  margin: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 `;
 
-const BookCard = ({ book, onEdit }) => {
+const BookCard = ({ book }) => {
+  const { title, author, genre, publishedYear } = book;
+
   return (
-    <StyledCard>
+    <StyledCard
+      onClick={() => console.log(`Clicked on book: ${book.objectID}`)}
+    >
       <CardContent>
-        <Typography variant="h5">{book.title}</Typography>
-        <Typography variant="body2">Author: {book.author}</Typography>
-        <Typography variant="body2">Genre: {book.genre}</Typography>
-        <Typography variant="body2">
-          Published Year: {book.publishedYear}
+        <Typography variant="h6" component="div">
+          {title}
         </Typography>
-        <Typography variant="body2">
-          Available Copies: {book.availableCopies}
+        <Typography variant="body2" color="text.secondary">
+          Author: {author}
         </Typography>
-        <Button variant="outlined" color="primary" onClick={() => onEdit(book)}>
-          Edit
-        </Button>
+        <Typography variant="body2" color="text.secondary">
+          Genre: {genre}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Published Year: {publishedYear}
+        </Typography>
       </CardContent>
     </StyledCard>
   );

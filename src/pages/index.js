@@ -1,5 +1,5 @@
 import SearchBar from "@/components/SearchBar";
-import { Typography } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import Head from "next/head";
 
 export default function Home() {
@@ -11,8 +11,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Typography variant="h1">Hello World</Typography>
-      <SearchBar />
+      <Container sx={{ minHeight: "100vh" }}>
+        <SearchBar />
+      </Container>
     </>
   );
 }
