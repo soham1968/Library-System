@@ -1,7 +1,7 @@
 // lib/firebase.ts
 
 import { EmailAuthProvider, getAuth, GoogleAuthProvider } from "firebase/auth";
-
+import { initializeApp, getApps } from "firebase/app";
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

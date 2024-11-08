@@ -1,16 +1,16 @@
 // pages/login.tsx
-import React from "react";
-import {
-  PageContainer,
-  LoginBox,
-  Title,
-  InputField,
-  StyledButton,
-} from "../styles/LoginPage";
-import { Button, Divider, Typography } from "@mui/material";
-import GoogleIcon from "@mui/icons-material/Google";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleAuthProvider } from "@/utils/firebase";
+import GoogleIcon from "@mui/icons-material/Google";
+import { Divider } from "@mui/material";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { useState } from "react";
+import {
+  InputField,
+  LoginBox,
+  PageContainer,
+  StyledButton,
+  Title,
+} from "../components/LoginPage";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -18,11 +18,27 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     const result = await signInWithPopup(auth, googleAuthProvider);
     const token = await result.user?.getIdToken();
+    console.log(token);
   };
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     const result = await signInWithEmailAndPassword(auth, email, password);
+    const token = await result.user?.getIdToken();
+    const body = {
+      firebaseUID: result.user?.uid,
+      email,
+      token,
+    };
+    const response = await fetch("/api/auth", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    console.log(response);
   };
 
   return (
