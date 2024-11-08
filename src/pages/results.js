@@ -36,15 +36,18 @@ const Results = () => {
 
   // Function to fetch books with pagination
   const fetchBooks = async (query, page) => {
-    setLoading(true);
-    const newResults = await searchBooks(query, page);
+    if (typeof window !== "undefined") {
+      setLoading(true);
+      const newResults = await searchBooks(query, page);
 
-    if (newResults.length === 0) {
-      setHasMore(false); // No more results to load
-    } else {
-      setResults((prevResults) => [...prevResults, ...newResults]);
+      if (newResults.length === 0) {
+        setHasMore(false); // No more results to load
+      } else {
+        setResults((prevResults) => [...prevResults, ...newResults]);
+      }
+      setLoading(false);
     }
-    setLoading(false);
+
   };
 
   // Use Intersection Observer to detect when reaching the end of the list
