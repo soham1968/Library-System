@@ -1,8 +1,6 @@
 // lib/firebase.ts
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/storage";
+
+import { EmailAuthProvider, getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,8 +12,14 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-if (!firebase.getApps().length > 0) {
-  firebase.initializeApp(firebaseConfig);
+let firebaseApp;
+if (!getApps().length) {
+  firebaseApp = initializeApp(firebaseConfig);
+} else {
+  firebaseApp = getApps()[0];
 }
 
-export default firebase;
+const auth = getAuth(firebaseApp);
+const googleAuthProvider = new GoogleAuthProvider();
+const emailAuthProvider = new EmailAuthProvider();
+export { auth, googleAuthProvider, emailAuthProvider };
