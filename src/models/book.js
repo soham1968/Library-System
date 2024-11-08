@@ -1,3 +1,4 @@
+import { removeFromAlgolia, syncToAlgolia } from "@/utils/algolia";
 import mongoose from "mongoose";
 const BookSchema = new mongoose.Schema(
   {
@@ -21,14 +22,12 @@ BookSchema.pre("save", function (next) {
   next();
 });
 
-//   // Middleware to sync with Algolia
-//   BookSchema.post('save', async function (doc) {
-//     // Sync book data to Algolia after save
-//     await syncToAlgolia(doc);
-//   });
+BookSchema.post("save", async function (doc) {
+  await syncToAlgolia(doc);
+});
 
-//   BookSchema.post('remove', async function (doc) {
-//     // Remove book data from Algolia after delete
-//     await removeFromAlgolia(doc._id);
-//   });
+BookSchema.post("remove", async function (doc) {
+  await removeFromAlgolia(doc._id);
+});
+
 export default mongoose.models.Book || mongoose.model("Book", BookSchema);

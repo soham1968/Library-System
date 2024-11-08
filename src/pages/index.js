@@ -1,3 +1,4 @@
+import SearchBar from "@/components/SearchBar";
 import { Typography } from "@mui/material";
 import Head from "next/head";
 
@@ -11,6 +12,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Typography variant="h1">Hello World</Typography>
+      <SearchBar />
     </>
   );
 }
