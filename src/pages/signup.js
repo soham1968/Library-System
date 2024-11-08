@@ -1,5 +1,5 @@
 // pages/signup.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   InputField,
   PageContainer,
@@ -11,15 +11,25 @@ import {
 import { auth } from "@/utils/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Typography } from "@mui/material";
+import { useRouter } from "next/router";
+import { useUser } from "@/reducers/UserContext";
 
 const SignUpPage = () => {
+  const router = useRouter();
+  const { dispatch } = useUser();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [message, setMessage] = useState(""); // Success/Error message
   const [isError, setIsError] = useState(false); // Message state
-  const isValid = name.length > 0 && email.length > 0 && password.length > 0;
+  const isValid = name.length > 0 && email.length > 0 && password.length > 6;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (token) router.push("/");
+    }
+  }, []);
   const handleEmailSignUp = async (e) => {
     e.preventDefault();
     try {
@@ -46,11 +56,12 @@ const SignUpPage = () => {
         body: JSON.stringify(body),
       });
       const data = await response.json();
-
       // Use the token as needed
-      console.log("Email sign-up successful:", data);
+      dispatch({ type: "SET_USER", payload: data });
+      dispatch({ type: "SET_LOADING", payload: false });
       setMessage("Sign up successful! Welcome aboard.");
       setIsError(false);
+      router.push("/");
     } catch (error) {
       setMessage(
         "Sign up failed. Please try again. If Already signed up Please log in."
@@ -63,7 +74,12 @@ const SignUpPage = () => {
     <PageContainer maxWidth="xs">
       <SignUpBox>
         <Title>Sign Up</Title>
-        <Typography variant="body1" align="center" gutterBottom>
+        <Typography
+          sx={{ color: "#000" }}
+          variant="body1"
+          align="center"
+          gutterBottom
+        >
           Create your account to get started. Please fill in your details below.
         </Typography>
         <form onSubmit={handleEmailSignUp} style={{ width: "100%" }}>
@@ -113,13 +129,24 @@ const SignUpPage = () => {
             Sign up
           </StyledButton>
         </form>
+        <Typography
+          sx={{ color: "#000", textDecoration: "underline" }}
+          variant="body1"
+          onClick={() => {
+            router.push("/login");
+          }}
+          align="center"
+          gutterBottom
+        >
+          Already have an account? Log In!
+        </Typography>
         {message && (
           <Typography
             variant="body2"
             align="center"
             color={isError ? "error" : "primary"}
             gutterBottom
-            sx={{ marginTop: "1rem" }}
+            sx={{ marginTop: "1rem", ":hover": { cursor: "pointer" } }}
           >
             {message}
           </Typography>

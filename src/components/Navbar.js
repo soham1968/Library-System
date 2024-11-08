@@ -11,6 +11,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { styled } from "@mui/material/styles";
 import { useUser } from "@/reducers/UserContext";
 import { useRouter } from "next/router";
+import { Security } from "@mui/icons-material";
 
 const NavbarContainer = styled(AppBar)({
   backgroundColor: "#123456", // Customize as needed
@@ -29,15 +30,25 @@ const Navbar = () => {
   return (
     <NavbarContainer position="static">
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+        <Typography
+          onClick={() => router?.push("/")}
+          variant="h6"
+          sx={{ flexGrow: 1, ":hover": { cursor: "pointer" } }}
+        >
           Library Management System
         </Typography>
-        <IconButton onClick={() => router.push("/cart")} color="inherit">
+        <IconButton onClick={() => router?.push("/cart")} color="inherit">
           <Badge badgeContent={cartItemCount} color="error">
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
-        <Avatar>{user?.name.charAt(0)}</Avatar>
+        {user?.email ? (
+          <Avatar>{user?.name?.charAt(0) || user?.email.charAt(0)}</Avatar>
+        ) : (
+          <IconButton onClick={() => router?.push("/signup")}>
+            <Security />
+          </IconButton>
+        )}
       </Toolbar>
     </NavbarContainer>
   );

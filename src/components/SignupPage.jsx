@@ -25,6 +25,7 @@ export const Title = styled(Typography)`
   margin-bottom: 1rem;
   font-size: 2rem;
   font-weight: bold;
+  color: #000;
 `;
 
 export const InputField = styled(TextField)`
