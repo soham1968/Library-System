@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     const { firebaseUID, name, email, mobile, token } = req.body;
-    console.log(req.body);
+
     if (!firebaseUID || !email || !token) {
       return res
         .status(400)
@@ -31,9 +31,9 @@ export default async function handler(req, res) {
         });
 
         await newUser.save();
-        return res.status(201).json(newUser);
+        return res.status(201).json({ user: newUser });
       }
-      return res.status(200).json(user);
+      return res.status(200).json({ user });
     } catch (error) {
       console.log(error);
       return res

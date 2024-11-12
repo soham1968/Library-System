@@ -57,7 +57,7 @@ const SignUpPage = () => {
       });
       const data = await response.json();
       // Use the token as needed
-      dispatch({ type: "SET_USER", payload: data });
+      dispatch({ type: "SET_USER", payload: data.user });
       dispatch({ type: "SET_LOADING", payload: false });
       setMessage("Sign up successful! Welcome aboard.");
       setIsError(false);

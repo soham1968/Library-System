@@ -49,7 +49,7 @@ const LoginPage = () => {
       const data = await response.json();
       setMessage("Log In successful! Redirecting you.");
       setIsError(false);
-      dispatch({ type: "SET_USER", payload: data });
+      dispatch({ type: "SET_USER", payload: data.user });
       dispatch({ type: "SET_LOADING", payload: false });
       router.push("/");
     } catch (error) {
@@ -80,7 +80,7 @@ const LoginPage = () => {
       const data = await response.json();
       setMessage("Log In successful! Redirecting you.");
       setIsError(false);
-      dispatch({ type: "SET_USER", payload: data });
+      dispatch({ type: "SET_USER", payload: data.user });
       dispatch({ type: "SET_LOADING", payload: false });
       router.push("/");
       //TODO Move this to a function and call it both places
