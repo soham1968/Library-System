@@ -98,7 +98,6 @@ const BookDetail = ({ book }) => {
       </DetailContainer>
     );
   }
-  console.log(state.user.cart);
   const isInCart = state?.user?.cart?.some((items) => items.book === book._id);
   return (
     <>
